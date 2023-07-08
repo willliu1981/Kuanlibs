@@ -118,6 +118,20 @@ public abstract class CommonDao<V extends CommonEntity> implements Dao<V> {
     }
 
 
+    @Override
+    public void delete(V entity) throws SQLException {
+        if (entity == null) {
+            throw new SQLException("entity is null");
+        }
+
+        Connection connection = DBFactoryCreator.getFactory().getConnection();
+        String sql = "delete from " + getTableName() + " where id=?";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, entity.getId());
+        boolean execute = preparedStatement.execute();
+        System.out.println("dbg CD:delete resulte is " + execute);
+    }
+
     /**
      * 使用createOrUpdateEntity方法時,必需實作的方法
      * 注意,如果create是AI,不應填id; update 不變更id,不應填id
