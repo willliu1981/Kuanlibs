@@ -68,7 +68,7 @@ public class AndroidDBFactory extends BaseDBFactory {
 
         } catch (SQLException | ClassNotFoundException e) {
             Toast.makeText(context, "conn error:", Toast.LENGTH_SHORT).show();
-            System.out.println("xxx conn error:"+e.getMessage());
+            System.out.println("dbg ADBF: conn error:"+e.getMessage());
             e.printStackTrace();
         }
         return null;
@@ -87,7 +87,7 @@ public class AndroidDBFactory extends BaseDBFactory {
                 e.printStackTrace();
             }
         } else {
-            Toast.makeText(context, "db is exists:", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(context, "db is exists:", Toast.LENGTH_SHORT).show();
             //System.out.println("xxx ADBConn :db is exists:"+file.getAbsolutePath());
         }
         return file.getAbsolutePath();
