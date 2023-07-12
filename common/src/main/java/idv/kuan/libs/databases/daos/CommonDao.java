@@ -52,11 +52,15 @@ public abstract class CommonDao<V extends CommonEntity> implements Dao<V> {
 
     @Override
     public V findById(V entity) throws SQLException {
+        if (entity == null || entity.getId() == null) {
+            throw new SQLException("Entity ID cannot be null");
+        }
         return findByIDOrAll(entity);
     }
 
     @Override
     public List<V> findAll() throws SQLException {
+
         return findByIDOrAll(createNewEntity());
     }
 
@@ -103,6 +107,9 @@ public abstract class CommonDao<V extends CommonEntity> implements Dao<V> {
      */
     @Override
     public void create(V entity) throws SQLException {
+        if (entity == null) {
+            throw new SQLException("Entity cannot be null");
+        }
         this.createOrUpdateEntity(entity);
     }
 
@@ -114,14 +121,17 @@ public abstract class CommonDao<V extends CommonEntity> implements Dao<V> {
      */
     @Override
     public void update(V entity) throws SQLException {
+        if (entity == null || entity.getId() == null) {
+            throw new SQLException("Entity ID cannot be null");
+        }
         this.createOrUpdateEntity(entity);
     }
 
 
     @Override
     public void delete(V entity) throws SQLException {
-        if (entity == null) {
-            throw new SQLException("entity is null");
+        if (entity == null || entity.getId() == null) {
+            throw new SQLException("Entity ID cannot be null");
         }
 
         Connection connection = DBFactoryCreator.getFactory().getConnection();
