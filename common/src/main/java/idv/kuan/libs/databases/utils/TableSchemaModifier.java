@@ -127,11 +127,15 @@ public class TableSchemaModifier {
      */
     public static void evolveTableStructure(Connection connection, String existingTableName, String updatedTableName, String sql) {
         try {
+            PreparedStatement preparedStatement = connection.prepareStatement("");
+
+            //移除殘留的temp的table
+            String sqlTemp = "DROP TABLE IF EXISTS " + existingTableName + "__temp";
+            preparedStatement.execute(sqlTemp);
 
             //將原有的table 改名為tableName+"__temp"
-            String sqlTemp = "ALTER TABLE " + existingTableName + " RENAME TO " + existingTableName + "__temp";
-            PreparedStatement preparedStatement = connection.prepareStatement(sqlTemp);
-            preparedStatement.execute();
+            sqlTemp = "ALTER TABLE " + existingTableName + " RENAME TO " + existingTableName + "__temp";
+            preparedStatement.execute(sqlTemp);
 
 
             //執行使用者需求的sql 語句
