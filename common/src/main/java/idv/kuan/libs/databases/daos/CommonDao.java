@@ -16,6 +16,10 @@ import idv.kuan.libs.databases.utils.QueryBuilder;
 
 public abstract class CommonDao<V extends CommonEntity> implements Dao<V> {
 
+    /**
+     *
+     * @return
+     */
     protected abstract V createNewEntity();
 
     @Override

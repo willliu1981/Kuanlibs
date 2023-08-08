@@ -77,7 +77,7 @@ public class TableSchemaModifier {
      * @param tableName
      * @param createSql
      */
-    public static void createNewOrEvolveTableStructure(Connection connection, int appVersion, String tableName, String createSql) {
+    public static void createOrUpdateTableWithDataMigration(Connection connection, int appVersion, String tableName, String createSql) {
         Boolean isTableExist = isTableExist(connection, tableName);
         if (isTableExist != null) {
             if (!isTableExist) {
@@ -107,7 +107,7 @@ public class TableSchemaModifier {
 
 
                 if (dbVersion >= -1 && dbVersion < appVersion) {
-                    evolveTableStructure(connection, tableName, tableName, createSql);
+                    updateTableAndMigrateData(connection, tableName, tableName, createSql);
 
                 }
 
@@ -125,7 +125,7 @@ public class TableSchemaModifier {
      * @param updatedTableName
      * @param sql
      */
-    public static void evolveTableStructure(Connection connection, String existingTableName, String updatedTableName, String sql) {
+    public static void updateTableAndMigrateData(Connection connection, String existingTableName, String updatedTableName, String sql) {
         try {
             PreparedStatement preparedStatement = connection.prepareStatement("");
 
