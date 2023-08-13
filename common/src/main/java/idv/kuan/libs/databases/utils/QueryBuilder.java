@@ -15,6 +15,12 @@ public class QueryBuilder {
         updateColumns = new ArrayList<>();
     }
 
+    /**
+     * 如果 value 是null,則跳出此方法,
+     * 若 value 可允許null,請使用addNullableColumnValue
+     * @param column sql的欄位名
+     * @param value model entity 的實際值
+     */
     public void addColumnValue(String column, Object value) {
         if(value!=null){
             addNullableColumnValue(column,value);

@@ -24,7 +24,7 @@ public class TableSchemaModifier {
 
     /**
      * @param connection
-     * @return -2=查無結果; -3=異常
+     * @return -2=查無結果; -3=異常; -4=編譯時的預設異常
      * -1 留給table 做為異常回傳值
      */
     public static int getDBVersion(Connection connection) {
@@ -72,13 +72,18 @@ public class TableSchemaModifier {
 
 
     /**
+     * 更新每個資料結構後,務必執行updateDBVersion
+     *
      * @param connection
-     * @param appVersion
+     * @param appVersion 取得方法:packageManager.getPackageInfo(getPackageName(), 0).versionCode
      * @param tableName
      * @param createSql
+     * @return
      */
-    public static void createOrUpdateTableWithDataMigration(Connection connection, int appVersion, String tableName, String createSql) {
+    public static boolean createOrUpdateTableWithDataMigration(Connection connection, int appVersion,
+                                                               String tableName, String createSql, String partMigrateSql) {
         Boolean isTableExist = isTableExist(connection, tableName);
+        boolean isUpdated = false;
         if (isTableExist != null) {
             if (!isTableExist) {
                 createNew(connection, createSql);
@@ -107,13 +112,19 @@ public class TableSchemaModifier {
 
 
                 if (dbVersion >= -1 && dbVersion < appVersion) {
-                    updateTableAndMigrateData(connection, tableName, tableName, createSql);
+                    if (partMigrateSql == null) {
+                        updateTableAndMigrateData(connection, tableName, tableName, createSql);
 
+                    } else {
+                        updateTableAndMigrateData2(connection, tableName, tableName, createSql, partMigrateSql);
+                    }
+                    isUpdated = true;
                 }
 
             }
         }
-
+        
+        return isUpdated;
     }
 
     /**
@@ -144,6 +155,40 @@ public class TableSchemaModifier {
 
             //將temp的table 資料賦給updated的table
             sqlTemp = "INSERT INTO " + updatedTableName + " SELECT * FROM " + existingTableName + "__temp";
+            preparedStatement.execute(sqlTemp);
+
+            //移除temp的table
+            sqlTemp = "DROP TABLE " + existingTableName + "__temp";
+            boolean execute = preparedStatement.execute(sqlTemp);
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    public static void updateTableAndMigrateData2(Connection connection, String existingTableName,
+                                                  String updatedTableName, String sql, String partMigrateSql) {
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement("");
+
+            //移除殘留的temp的table
+            String sqlTemp = "DROP TABLE IF EXISTS " + existingTableName + "__temp";
+            preparedStatement.execute(sqlTemp);
+
+            //將原有的table 改名為tableName+"__temp"
+            sqlTemp = "ALTER TABLE " + existingTableName + " RENAME TO " + existingTableName + "__temp";
+            preparedStatement.execute(sqlTemp);
+
+
+            //執行使用者需求的sql 語句
+            preparedStatement.execute(sql);
+
+
+            //將temp的table 資料賦給updated的table
+            sqlTemp = "INSERT INTO " + updatedTableName + partMigrateSql + " FROM " + existingTableName + "__temp";
             preparedStatement.execute(sqlTemp);
 
             //移除temp的table

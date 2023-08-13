@@ -42,7 +42,5 @@ public class DBFactoryCreator {
         return dbFactory;
     }
 
-    public static  String testMsg(){
-        return "test v1";
-    }
+
 }

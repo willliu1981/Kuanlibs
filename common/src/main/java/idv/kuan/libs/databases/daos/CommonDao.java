@@ -147,14 +147,20 @@ public abstract class CommonDao<V extends CommonEntity> implements Dao<V> {
     }
 
     /**
-     * 使用createOrUpdateEntity方法時,必需實作的方法
-     * 注意,如果create是AI,不應填id; update 不變更id,不應填id
+     * 使用createOrUpdateEntity方法時,此為必需實作的方法
+     * 注意,如果create是AI,不應填id值對; update 不變更id,不應填id,值對
      *
      * @param builder
      * @param entity
      */
     protected abstract void populateBuilderWithEntityProperties(QueryBuilder builder, V entity);
 
+    /**
+     * 
+     * @param entity
+     * @param resultSet
+     * @throws SQLException
+     */
     protected abstract void mapResultSetToEntity(V entity, ResultSet resultSet) throws SQLException;
 
     protected abstract String getTableName();
