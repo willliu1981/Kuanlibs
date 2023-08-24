@@ -116,7 +116,7 @@ public class TableSchemaModifiers {
                         updateTableAndMigrateData(connection, tableName, tableName, createSql);
 
                     } else {
-                        updateTableAndMigrateData2(connection, tableName, tableName, createSql, partMigrateSql);
+                        updateTableAndMigrateDataWithPartMigrateSql(connection, tableName, tableName, createSql, partMigrateSql);
                     }
                     isUpdated = true;
                 }
@@ -171,8 +171,8 @@ public class TableSchemaModifiers {
     }
 
 
-    public static void updateTableAndMigrateData2(Connection connection, String existingTableName,
-                                                  String updatedTableName, String sql, String partMigrateSql) {
+    public static void updateTableAndMigrateDataWithPartMigrateSql(Connection connection, String existingTableName,
+                                                                   String updatedTableName, String sql, String partMigrateSql) {
         try {
             PreparedStatement preparedStatement = connection.prepareStatement("");
 
