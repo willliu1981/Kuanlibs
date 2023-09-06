@@ -10,6 +10,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import idv.kuan.kuanandroidlibs.R;
 
+/**
+ * 使用本類別,需註解掉原來子類的onCreate,以避免IDE產生的setContentView(R.layout.activity_main)覆蓋本類別onCreate的setContentView
+ */
 public abstract class ProxyMainActivity extends AppCompatActivity {
 
     Button btnEntrance;
