@@ -125,7 +125,7 @@ public class TableSchemaModifiers {
         }
 
 
-        System.out.println("xxx TSMs test b");
+
         return isUpdated;
     }
 
@@ -173,6 +173,8 @@ public class TableSchemaModifiers {
 
     public static void updateTableAndMigrateDataWithPartMigrateSql(Connection connection, String existingTableName,
                                                                    String updatedTableName, String sql, String partMigrateSql) {
+
+
         try {
             PreparedStatement preparedStatement = connection.prepareStatement("");
 
@@ -187,11 +189,12 @@ public class TableSchemaModifiers {
 
             //執行使用者需求的sql 語句
             preparedStatement.execute(sql);
-
+            System.out.println("xxx TSM:data1="+sql);
 
             //將temp的table 資料賦給updated的table
             sqlTemp = "INSERT INTO " + updatedTableName + partMigrateSql + " FROM " + existingTableName + "__temp";
             preparedStatement.execute(sqlTemp);
+            System.out.println("xxx TSM:data2="+sqlTemp);
 
             //移除temp的table
             sqlTemp = "DROP TABLE " + existingTableName + "__temp";
