@@ -7,13 +7,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class TableSchemaModifiers {
-    private static final String DBVersionTable = "db_version_table";
-    private static final String TableColumnDatabase_version = "database_version";
+    private static final String DB_VERSION_TABLE = "db_version_table";
+    private static final String TABLE_COLUMN_DATABASE_VERSION = "database_version";
 
     public static void updateDBVersion(Connection connection, int databaseVersion) {
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(
-                    "update " + DBVersionTable + " set " + TableColumnDatabase_version + "=?");
+                    "update " + DB_VERSION_TABLE + " set " + TABLE_COLUMN_DATABASE_VERSION + "=?");
             preparedStatement.setInt(1, databaseVersion);
             preparedStatement.execute();
         } catch (SQLException e) {
@@ -30,12 +30,12 @@ public class TableSchemaModifiers {
     public static int getDBVersion(Connection connection) {
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(
-                    "select " + TableColumnDatabase_version + " from " + DBVersionTable);
+                    "select " + TABLE_COLUMN_DATABASE_VERSION + " from " + DB_VERSION_TABLE);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                int database_version = resultSet.getInt(TableColumnDatabase_version);
+                int database_version = resultSet.getInt(TABLE_COLUMN_DATABASE_VERSION);
                 if (database_version < -1) {
-                    throw new SQLException(TableColumnDatabase_version + " 應該回傳大於等於-1");
+                    throw new SQLException(TABLE_COLUMN_DATABASE_VERSION + " 應該回傳大於等於-1");
                 }
                 return database_version;
             } else {
@@ -50,7 +50,7 @@ public class TableSchemaModifiers {
     }
 
     private static void updateDBVersionTableStructure(Connection connection) {
-        String dropDBVersionTableSql = "DROP TABLE " + DBVersionTable;
+        String dropDBVersionTableSql = "DROP TABLE " + DB_VERSION_TABLE;
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(dropDBVersionTableSql);
             preparedStatement.execute();
@@ -58,12 +58,12 @@ public class TableSchemaModifiers {
             e.printStackTrace();
         }
 
-        String DBVersionTableCreateSql = "CREATE TABLE \"" + DBVersionTable + "\" ( " +
-                " \"" + TableColumnDatabase_version + "\" INTEGER DEFAULT -1 " +
+        String DBVersionTableCreateSql = "CREATE TABLE \"" + DB_VERSION_TABLE + "\" ( " +
+                " \"" + TABLE_COLUMN_DATABASE_VERSION + "\" INTEGER DEFAULT -1 " +
                 ")";
         createNew(connection, DBVersionTableCreateSql);
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement("insert into " + DBVersionTable + " values(-1)");
+            PreparedStatement preparedStatement = connection.prepareStatement("insert into " + DB_VERSION_TABLE + " values(-1)");
             preparedStatement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -85,18 +85,19 @@ public class TableSchemaModifiers {
         Boolean isTableExist = isTableExist(connection, tableName);
         boolean isUpdated = false;
         if (isTableExist != null) {
-            if (!isTableExist) {
+            if (!isTableExist) {//不存在table,創建新的
                 createNew(connection, createSql);
-            } else {
-                Boolean isDBVersionTableExist = isTableExist(connection, DBVersionTable);
-                if (!isDBVersionTableExist) {
-                    String DBVersionTableCreateSql = "CREATE TABLE \"" + DBVersionTable + "\" ( " +
-                            " \"" + TableColumnDatabase_version + "\" INTEGER DEFAULT -1 " +
+            } else {//有同名table,則開始覆寫
+                //DB版本table 是否存在
+                Boolean isDBVersionTableExist = isTableExist(connection, DB_VERSION_TABLE);
+                if (!isDBVersionTableExist) {//DB版本table 不存在則創建新的DB版本table
+                    String DBVersionTableCreateSql = "CREATE TABLE \"" + DB_VERSION_TABLE + "\" ( " +
+                            " \"" + TABLE_COLUMN_DATABASE_VERSION + "\" INTEGER DEFAULT -1 " +
                             ")";
                     createNew(connection, DBVersionTableCreateSql);
 
                     try {
-                        PreparedStatement preparedStatement = connection.prepareStatement("insert into " + DBVersionTable + " values(-1)");
+                        PreparedStatement preparedStatement = connection.prepareStatement("insert into " + DB_VERSION_TABLE + " values(-1)");
                         preparedStatement.execute();
                     } catch (SQLException e) {
                         e.printStackTrace();
@@ -105,13 +106,13 @@ public class TableSchemaModifiers {
 
                 int dbVersion = getDBVersion(connection);
 
-                if (dbVersion == -2) {
+                if (dbVersion == -2) {//無紀錄時,則重建新的db version table 結構,和鍵入一筆值為-1的default 紀錄
                     updateDBVersionTableStructure(connection);
                     dbVersion = getDBVersion(connection);
                 }
 
 
-                if (dbVersion >= -1 && dbVersion < appVersion) {
+                if (dbVersion >= -1 && dbVersion < appVersion) {//db版本為-1或有紀錄時並且db版本小於app 版本,則更新指定的table並嚐試遷移該table紀錄
                     if (partMigrateSql == null) {
                         updateTableAndMigrateData(connection, tableName, tableName, createSql);
 
@@ -131,7 +132,8 @@ public class TableSchemaModifiers {
 
     /**
      * 一般修改結構,不改欄位名,不減少欄位
-     * 建議使用createNewOrEvolveTableStructure
+     * 遷移全部紀錄
+     * 建議使用updateTableAndMigrateDataWithPartMigrateSql
      *
      * @param connection
      * @param existingTableName
@@ -171,6 +173,15 @@ public class TableSchemaModifiers {
     }
 
 
+    /**
+     * 可修改欄位名,增減欄位
+     * 遷移紀錄由partMigrateSql和其組成的語句決定
+     * @param connection
+     * @param existingTableName
+     * @param updatedTableName
+     * @param sql
+     * @param partMigrateSql
+     */
     public static void updateTableAndMigrateDataWithPartMigrateSql(Connection connection, String existingTableName,
                                                                    String updatedTableName, String sql, String partMigrateSql) {
 
@@ -189,12 +200,10 @@ public class TableSchemaModifiers {
 
             //執行使用者需求的sql 語句
             preparedStatement.execute(sql);
-            System.out.println("xxx TSM:data1="+sql);
 
             //將temp的table 資料賦給updated的table
             sqlTemp = "INSERT INTO " + updatedTableName + partMigrateSql + " FROM " + existingTableName + "__temp";
             preparedStatement.execute(sqlTemp);
-            System.out.println("xxx TSM:data2="+sqlTemp);
 
             //移除temp的table
             sqlTemp = "DROP TABLE " + existingTableName + "__temp";
