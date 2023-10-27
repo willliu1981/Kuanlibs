@@ -4,6 +4,6 @@ import java.sql.Connection;
 
 public interface   SchemaModifierExecutor {
 
-    void execute();
+    void execute(Connection connection,int appVersion);
 
 }
