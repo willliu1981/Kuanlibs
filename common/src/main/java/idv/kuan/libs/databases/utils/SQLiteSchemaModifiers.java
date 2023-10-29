@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SQLiteSchemaModifiers {
-    private static final String DB_VERSION_TABLE = "db_version_table";
-    private static final String TABLE_COLUMN_DATABASE_VERSION = "database_version";
+    public static final String DB_VERSION_TABLE = "db_version_table";
+    public static final String TABLE_COLUMN_DATABASE_VERSION = "database_version";
 
 
     public static class SchemaModifier {
@@ -30,7 +30,7 @@ public class SQLiteSchemaModifiers {
             this.list.add(schemaModifierExecutor);
         }
 
-        public void createDatabase() {
+        public void createOrUpdateDatabase() {
             for (SchemaModifierExecutor se : list) {
                 se.execute(connection, appVersion);
             }
@@ -41,18 +41,18 @@ public class SQLiteSchemaModifiers {
 
     }
 
-    public static class SchemaModifierSQL {
+    public static class ColumnsMappingSql {
         private String tableName;
         private String insertIntoSql;
         private String fromTableName;
         private String columns;
         private String selectedColumns;
 
-        public SchemaModifierSQL(String tableName) {
+        public ColumnsMappingSql(String tableName) {
             this.tableName = tableName;
         }
 
-        public SchemaModifierSQL(String tableName, String fromTableName) {
+        public ColumnsMappingSql(String tableName, String fromTableName) {
             this(tableName);
             this.fromTableName = fromTableName;
         }
@@ -129,7 +129,7 @@ public class SQLiteSchemaModifiers {
         return -3;
     }
 
-    private static void initializeDatabaseVersionTable(Connection connection) {
+    public static void initializeDatabaseVersionTable(Connection connection) {
         String dropDBVersionTableSql = "DROP TABLE " + DB_VERSION_TABLE;
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(dropDBVersionTableSql);
@@ -150,118 +150,6 @@ public class SQLiteSchemaModifiers {
         }
     }
 
-    /**
-     * @param connection
-     * @param appVersion
-     * @param tableName
-     * @param createSql
-     * @param partMigrateSqlMapping 以冒號 ":" 分隔前面和後面的column語句,前為目前要使用的columns,後為select 的 columns
-     * @return
-     */
-    public static boolean createOrUpdateTableWithDataMigration(
-            Connection connection, int appVersion, String tableName, String createSql, String partMigrateSqlMapping) {
-
-        String[] split = partMigrateSqlMapping.split(":");
-
-        SchemaModifierSQL schemaModifierSQL = new SchemaModifierSQL(tableName);
-        schemaModifierSQL.createInsertIntoSQL(split[0], split[1]);
-
-        return createOrUpdateTableWithDataMigration(connection, appVersion, tableName, createSql, schemaModifierSQL);
-    }
-
-
-    /**
-     * 更新每個資料結構後,務必執行updateDBVersion
-     *
-     * @param connection
-     * @param appVersion 取得方法:packageManager.getPackageInfo(getPackageName(), 0).versionCode
-     * @param tableName
-     * @param createSql
-     * @return
-     */
-    public static boolean createOrUpdateTableWithDataMigration(
-            Connection connection, int appVersion, String tableName, String createSql, SchemaModifierSQL insertIntoSql) {
-
-        Boolean isTableExist = isTableExist(connection, tableName);
-        boolean isUpdated = false;
-        if (isTableExist != null) {
-            if (!isTableExist) {//不存在table,創建新的
-                createNew(connection, createSql);
-            } else {//有同名table,則開始覆寫
-                //DB版本table 是否存在
-                Boolean isDBVersionTableExist = isTableExist(connection, DB_VERSION_TABLE);
-                if (!isDBVersionTableExist) {//DB版本table 不存在則創建新的DB版本table
-                    String DBVersionTableCreateSql = "CREATE TABLE \"" + DB_VERSION_TABLE + "\" ( " +
-                            " \"" + TABLE_COLUMN_DATABASE_VERSION + "\" INTEGER DEFAULT -1 )";
-                    createNew(connection, DBVersionTableCreateSql);
-
-                    try {
-                        PreparedStatement preparedStatement = connection.prepareStatement("insert into " + DB_VERSION_TABLE + " values(-1)");
-                        preparedStatement.execute();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                int dbVersion = getDBVersion(connection);
-
-                if (dbVersion == -2) {//無紀錄時,則重建新的db version table 結構,和鍵入一筆值為-1的default 紀錄
-                    initializeDatabaseVersionTable(connection);
-                    dbVersion = getDBVersion(connection);
-                }
-
-
-                if (dbVersion >= -1 && dbVersion < appVersion) {//db版本為-1或有紀錄時並且db版本小於app 版本,則更新指定的table並嚐試遷移該table紀錄
-                    insertIntoSql.setFromTableName(tableName + "__temp");
-                    updateTableAndMigrateDataWithInsertIntoSql(connection, tableName, tableName, createSql, insertIntoSql.getInsertIntoSQL());
-                    isUpdated = true;
-                }
-
-            }
-        }
-
-
-        return isUpdated;
-    }
-
-
-    public static void updateTableAndMigrateDataWithInsertIntoSql(
-            Connection connection, String existingTableName, String updatedTableName, String sql, String insertIntoSql) {
-
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement("");
-
-            //移除殘留的temp的table
-            String sqlTemp = "DROP TABLE IF EXISTS " + existingTableName + "__temp";
-            preparedStatement.execute(sqlTemp);
-
-            //將原有的table 改名為tableName+"__temp"
-            sqlTemp = "ALTER TABLE " + existingTableName + " RENAME TO " + existingTableName + "__temp";
-            preparedStatement.execute(sqlTemp);
-
-
-            //執行使用者需求的sql 語句
-            preparedStatement.execute(sql);
-
-            //將temp的table 資料賦給updated的table
-            if (insertIntoSql != null) {
-                sqlTemp = insertIntoSql;
-            } else {
-                sqlTemp = "INSERT INTO " + updatedTableName + " SELECT * FROM " + existingTableName + "__temp";
-            }
-            preparedStatement.execute(sqlTemp);
-
-
-            //移除temp的table
-            sqlTemp = "DROP TABLE " + existingTableName + "__temp";
-            boolean execute = preparedStatement.execute(sqlTemp);
-
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-    }
 
     public static Boolean isTableExist(Connection connection, String tableName) {
         try {
