@@ -8,38 +8,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SQLiteSchemaModifiers {
+public class SQLiteSchemaModifierUtil {
     public static final String DB_VERSION_TABLE = "db_version_table";
     public static final String TABLE_COLUMN_DATABASE_VERSION = "database_version";
 
-
-    public static class SchemaModifier {
-        private List<SchemaModifierExecutor> list = new ArrayList<>();
-        private Connection connection;
-        private int appVersion;
-
-        private SchemaModifier(Connection connection, int appVersion) {
-            this.connection = connection;
-            this.appVersion = appVersion;
-        }
-
-        /**
-         * @param schemaModifierExecutor 傳入connection, appVersion
-         */
-        public void addSchemaModifierExecutor(SchemaModifierExecutor schemaModifierExecutor) {
-            this.list.add(schemaModifierExecutor);
-        }
-
-        public void createOrUpdateDatabase() {
-            for (SchemaModifierExecutor se : list) {
-                se.execute(connection, appVersion);
-            }
-
-            //最後必做update database version
-            SQLiteSchemaModifiers.updateDBVersion(connection, appVersion);
-        }
-
-    }
 
     public static class ColumnsMappingSql {
         private String tableName;
@@ -79,14 +51,8 @@ public class SQLiteSchemaModifiers {
     }
 
 
-    private SQLiteSchemaModifiers() {
+    private SQLiteSchemaModifierUtil() {
 
-    }
-
-    static public SchemaModifier createSchemaModifier(Connection connection, int appVersion) {
-
-
-        return new SchemaModifier(connection, appVersion);
     }
 
 

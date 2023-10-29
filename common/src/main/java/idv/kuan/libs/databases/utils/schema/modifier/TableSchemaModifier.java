@@ -5,7 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import idv.kuan.libs.databases.utils.SQLiteSchemaModifiers;
+import idv.kuan.libs.databases.utils.SQLiteSchemaModifierUtil;
 
 public class TableSchemaModifier implements SchemaModifier {
 
@@ -26,7 +26,7 @@ public class TableSchemaModifier implements SchemaModifier {
 
     @Override
     public void execute() {
-        SQLiteSchemaModifiers.ColumnsMappingSql columnsMappingSql = new SQLiteSchemaModifiers.ColumnsMappingSql(tableName);
+        SQLiteSchemaModifierUtil.ColumnsMappingSql columnsMappingSql = new SQLiteSchemaModifierUtil.ColumnsMappingSql(tableName);
         columnsMappingSql.createInsertIntoSQL(currentColumns, selectedColumns);
         createOrUpdateTableWithDataMigration(connection, appVersion, tableName, constructionSql, columnsMappingSql);
 
@@ -47,7 +47,7 @@ public class TableSchemaModifier implements SchemaModifier {
 
         String[] split = partMigrateSqlMapping.split(":");
 
-        SQLiteSchemaModifiers.ColumnsMappingSql schemaModifierSQL = new SQLiteSchemaModifiers.ColumnsMappingSql(tableName);
+        SQLiteSchemaModifierUtil.ColumnsMappingSql schemaModifierSQL = new SQLiteSchemaModifierUtil.ColumnsMappingSql(tableName);
         schemaModifierSQL.createInsertIntoSQL(split[0], split[1]);
 
         return createOrUpdateTableWithDataMigration(connection, appVersion, tableName, createSql, schemaModifierSQL);
@@ -64,34 +64,34 @@ public class TableSchemaModifier implements SchemaModifier {
      */
     public boolean createOrUpdateTableWithDataMigration(
             Connection connection, int appVersion, String tableName, String
-            createSql, SQLiteSchemaModifiers.ColumnsMappingSql insertIntoSql) {
+            createSql, SQLiteSchemaModifierUtil.ColumnsMappingSql insertIntoSql) {
 
-        Boolean isTableExist = SQLiteSchemaModifiers.isTableExist(connection, tableName);
+        Boolean isTableExist = SQLiteSchemaModifierUtil.isTableExist(connection, tableName);
         boolean isUpdated = false;
         if (isTableExist != null) {
             if (!isTableExist) {//不存在table,創建新的
-                SQLiteSchemaModifiers.createNew(connection, createSql);
+                SQLiteSchemaModifierUtil.createNew(connection, createSql);
             } else {//有同名table,則開始覆寫
                 //DB版本table 是否存在
-                Boolean isDBVersionTableExist = SQLiteSchemaModifiers.isTableExist(connection, SQLiteSchemaModifiers.DB_VERSION_TABLE);
+                Boolean isDBVersionTableExist = SQLiteSchemaModifierUtil.isTableExist(connection, SQLiteSchemaModifierUtil.DB_VERSION_TABLE);
                 if (!isDBVersionTableExist) {//DB版本table 不存在則創建新的DB版本table
-                    String DBVersionTableCreateSql = "CREATE TABLE \"" + SQLiteSchemaModifiers.DB_VERSION_TABLE + "\" ( " +
-                            " \"" + SQLiteSchemaModifiers.TABLE_COLUMN_DATABASE_VERSION + "\" INTEGER DEFAULT -1 )";
-                    SQLiteSchemaModifiers.createNew(connection, DBVersionTableCreateSql);
+                    String DBVersionTableCreateSql = "CREATE TABLE \"" + SQLiteSchemaModifierUtil.DB_VERSION_TABLE + "\" ( " +
+                            " \"" + SQLiteSchemaModifierUtil.TABLE_COLUMN_DATABASE_VERSION + "\" INTEGER DEFAULT -1 )";
+                    SQLiteSchemaModifierUtil.createNew(connection, DBVersionTableCreateSql);
 
                     try {
-                        PreparedStatement preparedStatement = connection.prepareStatement("insert into " + SQLiteSchemaModifiers.DB_VERSION_TABLE + " values(-1)");
+                        PreparedStatement preparedStatement = connection.prepareStatement("insert into " + SQLiteSchemaModifierUtil.DB_VERSION_TABLE + " values(-1)");
                         preparedStatement.execute();
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
                 }
 
-                int dbVersion = SQLiteSchemaModifiers.getDBVersion(connection);
+                int dbVersion = SQLiteSchemaModifierUtil.getDBVersion(connection);
 
                 if (dbVersion == -2) {//無紀錄時,則重建新的db version table 結構,和鍵入一筆值為-1的default 紀錄
-                    SQLiteSchemaModifiers.initializeDatabaseVersionTable(connection);
-                    dbVersion = SQLiteSchemaModifiers.getDBVersion(connection);
+                    SQLiteSchemaModifierUtil.initializeDatabaseVersionTable(connection);
+                    dbVersion = SQLiteSchemaModifierUtil.getDBVersion(connection);
                 }
 
 
