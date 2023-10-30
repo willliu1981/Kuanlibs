@@ -7,20 +7,15 @@ import java.sql.SQLException;
 
 import idv.kuan.libs.databases.utils.SQLiteSchemaModifierUtil;
 
-public class TableSchemaModifier implements SchemaModifier {
+public class TableSchemaModifier extends SchemaModifierImpl {
 
     String tableName;
-    String constructionSql;
-    Connection connection;
-    int appVersion;
+
     String currentColumns;
     String selectedColumns;
 
-
     public TableSchemaModifier(Connection connection, int appVersion, String constructionSql) {
-        this.constructionSql = constructionSql;
-        this.connection = connection;
-        this.appVersion = appVersion;
+        super(connection, appVersion, constructionSql);
     }
 
 
