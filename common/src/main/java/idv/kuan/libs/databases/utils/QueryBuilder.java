@@ -1,4 +1,6 @@
 package idv.kuan.libs.databases.utils;
+
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -18,12 +20,13 @@ public class QueryBuilder {
     /**
      * 如果 value 是null,則跳出此方法,
      * 若 value 可允許null,請使用addNullableColumnValue
+     *
      * @param column sql的欄位名
-     * @param value model entity 的實際值
+     * @param value  model entity 的實際值
      */
     public void addColumnValue(String column, Object value) {
-        if(value!=null){
-            addNullableColumnValue(column,value);
+        if (value != null) {
+            addNullableColumnValue(column, value);
         }
     }
 
@@ -46,6 +49,8 @@ public class QueryBuilder {
                 statement.setInt(index, (Integer) value);
             } else if (value instanceof Double) {
                 statement.setDouble(index, (Double) value);
+            } else if (value instanceof byte[]) {
+                statement.setBytes(index, (byte[]) value);
             } else {
                 // Add more type handling as needed
                 throw new SQLException("Unsupported value type: " + value.getClass().getName());

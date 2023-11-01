@@ -6,8 +6,6 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
-import idv.kuan.libs.databases.utils.SQLiteSchemaModifierUtil;
-
 public class SchemaModifierHandler {
     private int appVersion;
     private Connection connection;
@@ -20,6 +18,13 @@ public class SchemaModifierHandler {
 
     }
 
+    /**
+     * 用來產生SchemaModifier實例,
+     * SchemaModifier 可以用來執行SQL語句,以修改Schema表格內容,
+     * 最後請使用SchemaModifierHandler.addSchemaModifier 將SchemaModifier實例加住list中,
+     * 並執行SchemaModifierHandler.execute 開始逐一update table,
+     * 該execute 在最後終會執行SQLiteSchemaModifierUtil.updateDBVersion,用來記綠app version 版本
+     */
     public static class SchemaModifierBuilder {
         private SchemaModifierHandler handler;
         String constructionSql;
@@ -32,7 +37,7 @@ public class SchemaModifierHandler {
             this.constructionSql = sql;
         }
 
-        public <T extends  SchemaModifierImpl> T createSchemaModifier(Class<T> schemaModifierClass) {
+        public <T extends SchemaModifierImpl> T createSchemaModifier(Class<T> schemaModifierClass) {
             try {
                 Constructor<T> constructor = schemaModifierClass.getConstructor(Connection.class, int.class, String.class);
                 return (T) constructor.newInstance(handler.connection, handler.appVersion, constructionSql);
@@ -48,7 +53,13 @@ public class SchemaModifierHandler {
     }
 
 
-    public SchemaModifierBuilder getSchemaModifierCreator() {
+    /**
+     * 取得 SchemaModifierBuilder,進一步產生SchemaModifier實例,
+     * SchemaModifier 可以用來執行SQL語句,以修改Schema表格內容
+     *
+     * @return
+     */
+    public SchemaModifierBuilder getSchemaModifierBuilder() {
         return new SchemaModifierBuilder(this);
     }
 

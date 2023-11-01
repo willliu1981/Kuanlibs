@@ -1,17 +1,16 @@
-package idv.kuan.libs.databases;
+package idv.kuan.libs.databases.utils;
 
 import java.sql.Connection;
 import java.util.HashMap;
 
 
-public abstract class BaseDBFactory extends DBFactoryCreator {
+public abstract class BaseDBFactory extends DBFactoryBuilder {
 
     private HashMap<String, String[]> commands = new HashMap<>();
 
     protected BaseDBFactory() {
     }
 
-    ;
 
     public BaseDBFactory config(String id, String... commands) {
         this.commands.put(id, commands);

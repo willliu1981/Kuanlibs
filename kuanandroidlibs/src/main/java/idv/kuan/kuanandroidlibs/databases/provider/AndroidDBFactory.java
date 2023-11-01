@@ -13,7 +13,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import idv.kuan.libs.databases.BaseDBFactory;
+import idv.kuan.libs.databases.utils.BaseDBFactory;
 
 
 public class AndroidDBFactory extends BaseDBFactory {

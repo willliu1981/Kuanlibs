@@ -1,23 +1,20 @@
 package idv.kuan.libs.databases.daos;
 
 
-import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import idv.kuan.libs.databases.DBFactoryCreator;
 import idv.kuan.libs.databases.models.CommonEntity;
+import idv.kuan.libs.databases.utils.DBFactoryBuilder;
 import idv.kuan.libs.databases.utils.QueryBuilder;
 
 public abstract class CommonDao<V extends CommonEntity> implements Dao<V> {
 
     /**
-     *
      * @return
      */
     protected abstract V createNewEntity();
@@ -27,7 +24,7 @@ public abstract class CommonDao<V extends CommonEntity> implements Dao<V> {
         if (entity == null) {
             throw new SQLException("entity is null");
         }
-        Connection connection = DBFactoryCreator.getFactory().getConnection();
+        Connection connection = DBFactoryBuilder.getFactory().getConnection();
         String sqlQuery = "select * from " + getTableName();
         PreparedStatement preparedStatement = null;
         if (entity.getId() == null) {
@@ -80,7 +77,7 @@ public abstract class CommonDao<V extends CommonEntity> implements Dao<V> {
             throw new SQLException("entity is null");
         }
 
-        Connection connection = DBFactoryCreator.getFactory().getConnection();
+        Connection connection = DBFactoryBuilder.getFactory().getConnection();
 
         QueryBuilder builder = new QueryBuilder();
         populateBuilderWithEntityProperties(builder, entity);
@@ -138,7 +135,7 @@ public abstract class CommonDao<V extends CommonEntity> implements Dao<V> {
             throw new SQLException("Entity ID cannot be null");
         }
 
-        Connection connection = DBFactoryCreator.getFactory().getConnection();
+        Connection connection = DBFactoryBuilder.getFactory().getConnection();
         String sql = "delete from " + getTableName() + " where id=?";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, entity.getId());
@@ -156,7 +153,6 @@ public abstract class CommonDao<V extends CommonEntity> implements Dao<V> {
     protected abstract void populateBuilderWithEntityProperties(QueryBuilder builder, V entity);
 
     /**
-     * 
      * @param entity
      * @param resultSet
      * @throws SQLException

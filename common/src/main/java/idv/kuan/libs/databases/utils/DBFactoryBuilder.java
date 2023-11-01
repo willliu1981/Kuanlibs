@@ -1,13 +1,13 @@
-package idv.kuan.libs.databases;
+package idv.kuan.libs.databases.utils;
 
 import java.util.HashMap;
 
-public class DBFactoryCreator {
+public class DBFactoryBuilder {
     static protected HashMap<String, BaseDBFactory> DBFactories = new HashMap<>();
     protected static String defaultKey;
     protected String currentId;
 
-    protected DBFactoryCreator() {
+    protected DBFactoryBuilder() {
 
     }
 

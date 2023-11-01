@@ -5,8 +5,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import idv.kuan.libs.databases.utils.SQLiteSchemaModifierUtil;
-
 public class TableSchemaModifier extends SchemaModifierImpl {
 
     String tableName;
@@ -103,6 +101,16 @@ public class TableSchemaModifier extends SchemaModifierImpl {
         return isUpdated;
     }
 
+    /**
+     * 修改表格內容,並且將之前的紀錄遷移到新的表格
+     *
+     * 註:這裡需要做例外處理,以防止表格中途出錯而影響尚未修改或已修改的紀錄
+     * @param connection
+     * @param existingTableName
+     * @param updatedTableName
+     * @param sql
+     * @param insertIntoSql
+     */
     public void updateTableAndMigrateDataWithInsertIntoSql(
             Connection connection, String existingTableName, String updatedTableName, String
             sql, String insertIntoSql) {
