@@ -8,11 +8,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import idv.kuan.libs.databases.models.CommonEntity;
+import idv.kuan.libs.databases.models.IAuditable;
 import idv.kuan.libs.databases.utils.DBFactoryBuilder;
 import idv.kuan.libs.databases.utils.QueryBuilder;
 
-public abstract class CommonDao<V extends CommonEntity> implements Dao<V> {
+public abstract class CommonDao<V extends IAuditable> implements Dao<V> {
 
     /**
      * @return

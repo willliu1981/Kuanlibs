@@ -7,7 +7,7 @@ import java.sql.Timestamp;
  * 需給定Integer getId();
  * 此CommonEntity擁有Timestamp atCreated 和 Timestamp atUpdated 需實作
  */
-public interface CommonEntity extends Serializable {
+public interface IAuditable extends Serializable {
 
     public Integer getId();
 
