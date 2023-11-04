@@ -25,7 +25,6 @@ public abstract class ProxyMainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.proxy_activity_main);
-
         init();
 
     }

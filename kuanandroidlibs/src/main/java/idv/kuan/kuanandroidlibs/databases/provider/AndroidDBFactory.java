@@ -2,6 +2,8 @@ package idv.kuan.kuanandroidlibs.databases.provider;
 
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.Toast;
 
 import java.io.File;
@@ -21,7 +23,6 @@ public class AndroidDBFactory extends BaseDBFactory {
     private static final String DBNameInAssets = "test.db";
 
     private static Context context;
-
 
 
     public AndroidDBFactory(Context context) {
@@ -67,8 +68,14 @@ public class AndroidDBFactory extends BaseDBFactory {
             return DriverManager.getConnection(url);
 
         } catch (SQLException | ClassNotFoundException e) {
-            Toast.makeText(context, "conn error:", Toast.LENGTH_SHORT).show();
-            System.out.println("dbg ADBF: conn error:"+e.getMessage());
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(context, "conn error:", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            System.out.println("dbg ADBF: conn error:" + e.getMessage());
             e.printStackTrace();
         }
         return null;
@@ -78,11 +85,24 @@ public class AndroidDBFactory extends BaseDBFactory {
         String targetFileStrPath = context.getFilesDir().getPath();
         File file = context.getFileStreamPath(targetDBName);
         if (!file.exists()) {
-            Toast.makeText(context, "start copy db...", Toast.LENGTH_SHORT).show();
+
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(context, "start copy db...", Toast.LENGTH_SHORT).show();
+                }
+            });
+
 
             try {
                 copyAssetsFileTo(context, sourceDBName, targetFileStrPath, targetDBName);
-                Toast.makeText(context, "copy db finish", Toast.LENGTH_SHORT).show();
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(context, "copy db finish", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
