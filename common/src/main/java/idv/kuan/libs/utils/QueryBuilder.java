@@ -1,4 +1,4 @@
-package idv.kuan.libs.databases.utils;
+package idv.kuan.libs.utils;
 
 
 import java.sql.PreparedStatement;

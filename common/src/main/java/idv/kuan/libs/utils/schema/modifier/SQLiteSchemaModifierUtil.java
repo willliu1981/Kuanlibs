@@ -1,4 +1,4 @@
-package idv.kuan.libs.databases.utils.schema.modifier;
+package idv.kuan.libs.utils.schema.modifier;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
