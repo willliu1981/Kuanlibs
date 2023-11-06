@@ -18,15 +18,15 @@ import java.sql.SQLException;
 import idv.kuan.libs.utils.BaseDBFactory;
 
 
-public class AndroidDBFactory extends BaseDBFactory {
+public class AndroidSQLiteFactory extends BaseDBFactory {
     public static String TargetDBName = "test.db";
     private static final String DBNameInAssets = "test.db";
 
-    private static Context context;
+    private Context context;
 
 
-    public AndroidDBFactory(Context context) {
-        AndroidDBFactory.context = context;
+    public AndroidSQLiteFactory(Context context) {
+        this.context = context;
     }
 
     @Override
@@ -50,31 +50,22 @@ public class AndroidDBFactory extends BaseDBFactory {
         if (commands[0] == null || commands[0].equals("")) {
             command1 = DBNameInAssets;
         } else {
-            command1 = commands[0];
+            command1 = commands[0] + ".db";
         }
 
         if (commands[1] == null || commands[1].equals("")) {
             command2 = TargetDBName;
         } else {
-            command2 = commands[1];
+            command2 = commands[1] + ".db";
         }
 
-
         String url = "jdbc:sqldroid:" + copyDatabaseFromAssets(context, command1, command2);
-
 
         try {
             Class.forName("org.sqldroid.SQLDroidDriver");
             return DriverManager.getConnection(url);
-
         } catch (SQLException | ClassNotFoundException e) {
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(context, "conn error:", Toast.LENGTH_SHORT).show();
-                }
-            });
-
+            showToast("conn error:");
             System.out.println("dbg ADBF: conn error:" + e.getMessage());
             e.printStackTrace();
         }
@@ -85,24 +76,10 @@ public class AndroidDBFactory extends BaseDBFactory {
         String targetFileStrPath = context.getFilesDir().getPath();
         File file = context.getFileStreamPath(targetDBName);
         if (!file.exists()) {
-
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(context, "start copy db...", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-
+            showToast("start copy db...");
             try {
                 copyAssetsFileTo(context, sourceDBName, targetFileStrPath, targetDBName);
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(context, "copy db finish", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
+                showToast("copy db finish");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -127,6 +104,15 @@ public class AndroidDBFactory extends BaseDBFactory {
         myOutput.flush();
         myOutput.close();
 
+    }
+
+    private void showToast(String msg) {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 
