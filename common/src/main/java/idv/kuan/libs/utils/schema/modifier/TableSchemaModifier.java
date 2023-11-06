@@ -6,14 +6,11 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class TableSchemaModifier extends SchemaModifierImpl {
-
-    String tableName;
-
     String currentColumns;
     String selectedColumns;
 
-    public TableSchemaModifier(Connection connection, int appVersion, String constructionSql) {
-        super(connection, appVersion, constructionSql);
+    public TableSchemaModifier(Connection connection, int appVersion, String constructionSql, String tableName) {
+        super(connection, appVersion, constructionSql, tableName);
     }
 
 
@@ -40,10 +37,10 @@ public class TableSchemaModifier extends SchemaModifierImpl {
 
         String[] split = partMigrateSqlMapping.split(":");
 
-        SQLiteSchemaModifierUtil.ColumnsMappingSql schemaModifierSQL = new SQLiteSchemaModifierUtil.ColumnsMappingSql(tableName);
-        schemaModifierSQL.createInsertIntoSQL(split[0], split[1]);
+        SQLiteSchemaModifierUtil.ColumnsMappingSql columnsMappingSql = new SQLiteSchemaModifierUtil.ColumnsMappingSql(tableName);
+        columnsMappingSql.createInsertIntoSQL(split[0], split[1]);
 
-        return createOrUpdateTableWithDataMigration(connection, appVersion, tableName, createSql, schemaModifierSQL);
+        return createOrUpdateTableWithDataMigration(connection, appVersion, tableName, createSql, columnsMappingSql);
     }
 
     /**
@@ -57,7 +54,7 @@ public class TableSchemaModifier extends SchemaModifierImpl {
      */
     public boolean createOrUpdateTableWithDataMigration(
             Connection connection, int appVersion, String tableName, String
-            createSql, SQLiteSchemaModifierUtil.ColumnsMappingSql insertIntoSql) {
+            createSql, SQLiteSchemaModifierUtil.ColumnsMappingSql columnsMappingInsertIntoSql) {
 
         Boolean isTableExist = SQLiteSchemaModifierUtil.isTableExist(connection, tableName);
         boolean isUpdated = false;
@@ -89,8 +86,9 @@ public class TableSchemaModifier extends SchemaModifierImpl {
 
 
                 if (dbVersion >= -1 && dbVersion < appVersion) {//db版本為-1或有紀錄時並且db版本小於app 版本,則更新指定的table並嚐試遷移該table紀錄
-                    insertIntoSql.setFromTableName(tableName + "__temp");
-                    updateTableAndMigrateDataWithInsertIntoSql(connection, tableName, tableName, createSql, insertIntoSql.getInsertIntoSQL());
+                    columnsMappingInsertIntoSql.setFromTableName(tableName + "__temp");
+                    updateTableAndMigrateDataWithInsertIntoSql(
+                            connection, tableName, tableName, createSql, columnsMappingInsertIntoSql.getInsertIntoSQL());
                     isUpdated = true;
                 }
 
@@ -103,8 +101,9 @@ public class TableSchemaModifier extends SchemaModifierImpl {
 
     /**
      * 修改表格內容,並且將之前的紀錄遷移到新的表格
-     *
+     * <p>
      * 註:這裡需要做例外處理,以防止表格中途出錯而影響尚未修改或已修改的紀錄
+     *
      * @param connection
      * @param existingTableName
      * @param updatedTableName

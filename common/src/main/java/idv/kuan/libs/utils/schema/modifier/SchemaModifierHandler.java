@@ -27,20 +27,28 @@ public class SchemaModifierHandler {
      */
     public static class SchemaModifierBuilder {
         private SchemaModifierHandler handler;
-        String constructionSql;
+        private String constructionSql;
+        private String tableName;
+
 
         private SchemaModifierBuilder(SchemaModifierHandler schemaModifierHandler) {
             this.handler = schemaModifierHandler;
         }
 
-        public void setConstructionSql(String sql) {
+        public SchemaModifierBuilder setConstructionSql(String sql) {
             this.constructionSql = sql;
+            return this;
+        }
+
+        public SchemaModifierBuilder setTableName(String tableName) {
+            this.tableName = tableName;
+            return this;
         }
 
         public <T extends SchemaModifierImpl> T createSchemaModifier(Class<T> schemaModifierClass) {
             try {
-                Constructor<T> constructor = schemaModifierClass.getConstructor(Connection.class, int.class, String.class);
-                return (T) constructor.newInstance(handler.connection, handler.appVersion, constructionSql);
+                Constructor<T> constructor = schemaModifierClass.getConstructor(Connection.class, int.class, String.class, String.class);
+                return (T) constructor.newInstance(handler.connection, handler.appVersion, constructionSql, tableName);
 
             } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
