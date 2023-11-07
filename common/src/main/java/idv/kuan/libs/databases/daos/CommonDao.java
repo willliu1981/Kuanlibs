@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import idv.kuan.libs.databases.models.IAuditable;
-import idv.kuan.libs.utils.DBFactoryBuilder;
-import idv.kuan.libs.utils.QueryBuilder;
+import idv.kuan.libs.databases.DBFactoryBuilder;
+import idv.kuan.libs.databases.QueryBuilder;
 
 public abstract class CommonDao<V extends IAuditable> implements Dao<V> {
 

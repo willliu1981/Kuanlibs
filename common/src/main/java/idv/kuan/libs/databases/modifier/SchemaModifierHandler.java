@@ -1,4 +1,4 @@
-package idv.kuan.libs.utils.schema.modifier;
+package idv.kuan.libs.databases.modifier;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

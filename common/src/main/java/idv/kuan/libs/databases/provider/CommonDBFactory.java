@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import idv.kuan.libs.utils.BaseDBFactory;
+import idv.kuan.libs.databases.BaseDBFactory;
 
 public class CommonDBFactory extends BaseDBFactory {
     public static String DefaultUrl = "C:/java/db/sqlite/flashcard4/fc4.db";
