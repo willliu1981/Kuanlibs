@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.util.HashMap;
 
 
-public abstract class BaseDBFactory extends DBFactoryBuilder {
+public abstract class BaseDBFactory extends DBFactoryConfiguration {
 
     private HashMap<String, String[]> commands = new HashMap<>();
 

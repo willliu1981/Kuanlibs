@@ -1,4 +1,4 @@
-package idv.kuan.libs.databases.modifier;
+package idv.kuan.libs.databases.schema.modifier;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -10,6 +10,7 @@ public class SchemaModifierHandler {
     private int appVersion;
     private Connection connection;
     private List<SchemaModifier> modifiers = new ArrayList<>();
+    private SchemaModifierBuilder builder;
 
     public SchemaModifierHandler(Connection connection, int appVersion) {
         this.connection = connection;
@@ -48,13 +49,20 @@ public class SchemaModifierHandler {
         public <T extends SchemaModifierImpl> T createSchemaModifier(Class<T> schemaModifierClass) {
             try {
                 Constructor<T> constructor = schemaModifierClass.getConstructor(Connection.class, int.class, String.class, String.class);
-                return (T) constructor.newInstance(handler.connection, handler.appVersion, constructionSql, tableName);
+                T t = constructor.newInstance(handler.connection, handler.appVersion, constructionSql, tableName);
 
+                initParams();
+                return t;
             } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
             }
 
             return null;
+        }
+
+        private void initParams() {
+            this.constructionSql = null;
+            this.tableName = null;
         }
 
 
@@ -68,7 +76,10 @@ public class SchemaModifierHandler {
      * @return
      */
     public SchemaModifierBuilder getSchemaModifierBuilder() {
-        return new SchemaModifierBuilder(this);
+        if (this.builder == null) {
+            this.builder = new SchemaModifierBuilder(this);
+        }
+        return this.builder;
     }
 
 

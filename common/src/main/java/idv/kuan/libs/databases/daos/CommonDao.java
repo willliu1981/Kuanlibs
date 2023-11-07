@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import idv.kuan.libs.databases.models.IAuditable;
-import idv.kuan.libs.databases.DBFactoryBuilder;
+import idv.kuan.libs.databases.DBFactoryConfiguration;
 import idv.kuan.libs.databases.QueryBuilder;
 
 public abstract class CommonDao<V extends IAuditable> implements Dao<V> {
@@ -24,7 +24,7 @@ public abstract class CommonDao<V extends IAuditable> implements Dao<V> {
         if (entity == null) {
             throw new SQLException("entity is null");
         }
-        Connection connection = DBFactoryBuilder.getFactory().getConnection();
+        Connection connection = DBFactoryConfiguration.getFactory().getConnection();
         String sqlQuery = "select * from " + getTableName();
         PreparedStatement preparedStatement = null;
         if (entity.getId() == null) {
@@ -77,7 +77,7 @@ public abstract class CommonDao<V extends IAuditable> implements Dao<V> {
             throw new SQLException("entity is null");
         }
 
-        Connection connection = DBFactoryBuilder.getFactory().getConnection();
+        Connection connection = DBFactoryConfiguration.getFactory().getConnection();
 
         QueryBuilder builder = new QueryBuilder();
         populateBuilderWithEntityProperties(builder, entity);
@@ -135,7 +135,7 @@ public abstract class CommonDao<V extends IAuditable> implements Dao<V> {
             throw new SQLException("Entity ID cannot be null");
         }
 
-        Connection connection = DBFactoryBuilder.getFactory().getConnection();
+        Connection connection = DBFactoryConfiguration.getFactory().getConnection();
         String sql = "delete from " + getTableName() + " where id=?";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, entity.getId());

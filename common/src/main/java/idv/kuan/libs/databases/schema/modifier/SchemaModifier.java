@@ -1,4 +1,4 @@
-package idv.kuan.libs.databases.modifier;
+package idv.kuan.libs.databases.schema.modifier;
 
 public interface SchemaModifier {
 

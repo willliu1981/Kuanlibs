@@ -2,12 +2,12 @@ package idv.kuan.libs.databases;
 
 import java.util.HashMap;
 
-public class DBFactoryBuilder {
+public class DBFactoryConfiguration {
     static protected HashMap<String, BaseDBFactory> DBFactories = new HashMap<>();
     protected static String defaultKey;
     protected String currentId;
 
-    protected DBFactoryBuilder() {
+    protected DBFactoryConfiguration() {
 
     }
 

@@ -1,4 +1,4 @@
-package idv.kuan.libs.databases.modifier;
+package idv.kuan.libs.databases.schema.modifier;
 
 
 import java.sql.Connection;
@@ -169,7 +169,7 @@ public class TableSchemaModifier extends SchemaModifierImpl {
         return currentColumns;
     }
 
-    public void setCurrentColumns(String currentColumns) {
+    public void setNewColumns(String currentColumns) {
         this.currentColumns = currentColumns;
     }
 
@@ -177,7 +177,7 @@ public class TableSchemaModifier extends SchemaModifierImpl {
         return selectedColumns;
     }
 
-    public void setSelectedColumns(String selectedColumns) {
+    public void setOldColumns(String selectedColumns) {
         this.selectedColumns = selectedColumns;
     }
 
