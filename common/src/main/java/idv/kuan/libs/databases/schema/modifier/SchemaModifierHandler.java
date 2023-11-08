@@ -88,6 +88,7 @@ public class SchemaModifierHandler {
             this.modifiers.forEach(SchemaModifier::execute);
 
             //最後必做update database version
+            System.out.println("xxx SMH:" + appVersion);
             SQLiteSchemaModifierUtil.updateDBVersion(connection, appVersion);
         }
 

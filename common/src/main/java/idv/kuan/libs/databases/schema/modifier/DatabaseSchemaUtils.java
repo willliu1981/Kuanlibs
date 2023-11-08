@@ -31,7 +31,7 @@ public class DatabaseSchemaUtils {
     public static   void checkAndUpdateSchema(VersionHelper helper, UpdateSchemaExecutor executor) {
         SchemaModifierHandler handler = new SchemaModifierHandler(DBFactoryConfiguration.getFactory().getConnection(), helper.getVersionCode());
         List<SchemaModifier> modifiers = new ArrayList<>();
-        executor.execute(handler.getSchemaModifierBuilder(), (List<SchemaModifier>) modifiers);
+        executor.execute(handler.getSchemaModifierBuilder(), modifiers);
         modifiers.forEach(m -> handler.addSchemaModifier(m));
         handler.execute();
     }
