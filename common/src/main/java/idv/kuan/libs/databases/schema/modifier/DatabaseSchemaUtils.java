@@ -17,7 +17,7 @@ public class DatabaseSchemaUtils {
          * @param modifierBuilder
          * @param modifiers
          */
-        public   void execute(SchemaModifierHandler.SchemaModifierBuilder modifierBuilder, List<SchemaModifier> modifiers);
+        public void execute(SchemaModifierHandler.SchemaModifierBuilder modifierBuilder, List<SchemaModifier> modifiers);
     }
 
 
@@ -28,7 +28,8 @@ public class DatabaseSchemaUtils {
      *
      * @param executor
      */
-    public static   void checkAndUpdateSchema(VersionHelper helper, UpdateSchemaExecutor executor) {
+    public static void checkAndUpdateSchema(VersionHelper helper, UpdateSchemaExecutor executor) {
+        System.out.println("xxx DSU:"+DBFactoryConfiguration.getFactory());
         SchemaModifierHandler handler = new SchemaModifierHandler(DBFactoryConfiguration.getFactory().getConnection(), helper.getVersionCode());
         List<SchemaModifier> modifiers = new ArrayList<>();
         executor.execute(handler.getSchemaModifierBuilder(), modifiers);
