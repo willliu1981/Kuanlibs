@@ -62,6 +62,7 @@ public class SQLiteSchemaModifierUtil {
                     "update " + DB_VERSION_TABLE + " set " + TABLE_COLUMN_DATABASE_VERSION + "=?");
             preparedStatement.setInt(1, databaseVersion);
             preparedStatement.execute();
+            preparedStatement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -83,6 +84,8 @@ public class SQLiteSchemaModifierUtil {
                 if (database_version < -1) {
                     throw new SQLException(TABLE_COLUMN_DATABASE_VERSION + " 應該回傳大於等於-1");
                 }
+                resultSet.close();
+                preparedStatement.close();
                 return database_version;
             } else {
                 return -2;
@@ -100,6 +103,7 @@ public class SQLiteSchemaModifierUtil {
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(dropDBVersionTableSql);
             preparedStatement.execute();
+            preparedStatement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -111,6 +115,7 @@ public class SQLiteSchemaModifierUtil {
         try {
             PreparedStatement preparedStatement = connection.prepareStatement("insert into " + DB_VERSION_TABLE + " values(-1)");
             preparedStatement.execute();
+            preparedStatement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -122,14 +127,17 @@ public class SQLiteSchemaModifierUtil {
             DatabaseMetaData metaData = connection.getMetaData();
             String[] types = {"TABLE"};
             ResultSet resultSet = metaData.getTables(null, null, tableName, types);
-
             if (resultSet.next()) {
+                resultSet.close();
                 return true;
             } else {
+                resultSet.close();
                 return false;
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+
         }
         return null;
     }
@@ -138,7 +146,7 @@ public class SQLiteSchemaModifierUtil {
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.execute();
-
+            preparedStatement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
