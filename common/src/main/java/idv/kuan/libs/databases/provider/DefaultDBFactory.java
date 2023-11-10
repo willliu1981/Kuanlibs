@@ -19,8 +19,8 @@ public class DefaultDBFactory extends BaseDBFactory {
         if (commands == null || commands[0] == null || commands[0].equals("")) {
             command = DefaultUrl;
 
-        }else{
-            command=commands[0];
+        } else {
+            command = commands[0];
         }
 
 

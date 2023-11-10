@@ -115,19 +115,19 @@ public class TableSchemaModifier extends SchemaModifierImpl {
             sql, String insertIntoSql) {
 
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement("");
 
             //移除殘留的temp的table
             String sqlTemp = "DROP TABLE IF EXISTS " + existingTableName + "__temp";
-            preparedStatement.execute(sqlTemp);
+            PreparedStatmentExecute(sqlTemp);
+
 
             //將原有的table 改名為tableName+"__temp"
             sqlTemp = "ALTER TABLE " + existingTableName + " RENAME TO " + existingTableName + "__temp";
-            preparedStatement.execute(sqlTemp);
+            PreparedStatmentExecute(sqlTemp);
 
 
             //執行使用者需求的sql 語句
-            preparedStatement.execute(sql);
+            PreparedStatmentExecute(sql);
 
             //將temp的table 資料賦給updated的table
             if (insertIntoSql != null) {
@@ -135,18 +135,25 @@ public class TableSchemaModifier extends SchemaModifierImpl {
             } else {
                 sqlTemp = "INSERT INTO " + updatedTableName + " SELECT * FROM " + existingTableName + "__temp";
             }
-            preparedStatement.execute(sqlTemp);
+            PreparedStatmentExecute(sqlTemp);
 
 
             //移除temp的table
             sqlTemp = "DROP TABLE " + existingTableName + "__temp";
-            boolean execute = preparedStatement.execute(sqlTemp);
+            PreparedStatmentExecute(sqlTemp);
 
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
+    }
+
+    private void PreparedStatmentExecute(String sql) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            System.out.println("xxx TSM:"+sql);
+            preparedStatement.execute();
+        }
     }
 
     public String getTableName() {
