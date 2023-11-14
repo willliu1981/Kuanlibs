@@ -5,18 +5,18 @@ import java.util.Map;
 
 public class MetadataRegister {
 
-    private MetadataRegister(){
+    private MetadataRegister() {
 
     }
 
-    private static Map<Integer, MetadataEntityUtil.Metadata> metadataMap = new HashMap<>();
+    private static Map<Integer, Class<? extends MetadataEntityUtil.Metadata>> metadataMap = new HashMap<>();
 
-    public static void addMetadata(Integer version, MetadataEntityUtil.Metadata metadata) {
-        MetadataRegister.metadataMap.put(version, metadata);
+    public static void addMetadata(Integer version, Class<? extends MetadataEntityUtil.Metadata> metadataClass) {
+        MetadataRegister.metadataMap.put(version, metadataClass);
 
     }
 
-    public static MetadataEntityUtil.Metadata getMetadata(Integer version) {
+    public static Class<? extends MetadataEntityUtil.Metadata> getMetadata(Integer version) {
         return MetadataRegister.metadataMap.get(version);
     }
 

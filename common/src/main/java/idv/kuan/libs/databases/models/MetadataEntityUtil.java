@@ -14,7 +14,7 @@ public class MetadataEntityUtil {
 
     }
 
-    public static byte[] serializeMetadata( Metadata metadata) {
+    public static byte[] serializeMetadata(Metadata metadata) {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
              ObjectOutputStream oos = new ObjectOutputStream(bos)) {
             oos.writeObject(metadata);
@@ -37,6 +37,10 @@ public class MetadataEntityUtil {
         byte[] data;
         int versoion;
 
+        /**
+         * @param data byte array data from SQL column.
+         * @return
+         */
         public MetadataBuilder setData(byte[] data) {
             this.data = data;
             return this;
@@ -53,9 +57,13 @@ public class MetadataEntityUtil {
                 ByteArrayInputStream bis = new ByteArrayInputStream(data);
                 try (ObjectInputStream ois = new ObjectInputStream(bis)) {
 
+                    Object o = ois.readObject();
+                    Class<Metadata> metadataClass = (Class<Metadata>) MetadataRegister.getMetadata(versoion);
+                    if (metadataClass.isInstance(o)) {
+                        return metadataClass.cast(o);
+                    }
 
-                    return MetadataRegister.getMetadata(versoion);
-                } catch (IOException e) {
+                } catch (IOException | ClassNotFoundException e) {
                     //throw new RuntimeException("Failed to deserialize metadata", e);
                     e.printStackTrace();
                 }
@@ -72,11 +80,28 @@ public class MetadataEntityUtil {
     public interface Metadata extends Serializable {
         MetadataObject getMetadataObject(String name);
 
+        void addMetadataObject(String name, MetadataObject metadataObject);
+
     }
 
     public static class MetadataObject implements Serializable {
 
+        private String name;
 
+        public MetadataObject() {
+
+        }
+
+        public MetadataObject(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return "MetadataObject{" +
+                    "name='" + name + '\'' +
+                    '}';
+        }
     }
 
 }
