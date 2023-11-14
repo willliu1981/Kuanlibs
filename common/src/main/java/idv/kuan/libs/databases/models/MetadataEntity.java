@@ -1,22 +1,23 @@
 package idv.kuan.libs.databases.models;
 
 
-import java.io.Serializable;
 import java.sql.Timestamp;
 
 public abstract class MetadataEntity implements IAuditable {
 
     protected Integer id;
-    protected Metadata metadata;
+    protected MetadataEntityUtil.Metadata metadata;
+    protected Integer version;
 
 
     public MetadataEntity() {
-        this.metadata = new Metadata(-1);
+        //this.metadata = new MetadataEntityUtil.Metadata();
     }
 
 
+    /*
     public static class Metadata implements Cloneable, Serializable {
-        private Integer version;
+        private static final long serialVersionUID = 1L;
         private String data;
         private Timestamp atCreated;
         private Timestamp atUpdated;
@@ -37,18 +38,6 @@ public abstract class MetadataEntity implements IAuditable {
         }
 
 
-        public Metadata(Integer version) {
-            this.version = version;
-        }
-
-        public Integer getVersion() {
-            return version;
-        }
-
-        public void setVersion(Integer version) {
-            this.version = version;
-        }
-
         public String getData() {
             return data;
         }
@@ -57,8 +46,7 @@ public abstract class MetadataEntity implements IAuditable {
         @Override
         public String toString() {
             return "Metadata{" +
-                    "version=" + version +
-                    ", data='" + data + '\'' +
+                    "data='" + data + '\'' +
                     ", atCreated=" + atCreated +
                     ", atUpdated=" + atUpdated +
                     '}';
@@ -68,6 +56,9 @@ public abstract class MetadataEntity implements IAuditable {
             this.data = data;
         }
     }
+
+         */
+
 
     @Override
     public Integer getId() {
@@ -81,46 +72,60 @@ public abstract class MetadataEntity implements IAuditable {
 
     @Override
     public Timestamp getAtCreated() {
-        return metadata.atCreated;
+        //return metadata.atCreated;
+        return null;
     }
 
     @Override
     public void setAtCreated(Timestamp atCreated) {
-        metadata.atCreated = atCreated;
+        //metadata.atCreated = atCreated;
     }
 
     @Override
     public Timestamp getAtUpdated() {
-        return metadata.atUpdated;
+        //return metadata.atUpdated;
+        return null;
     }
 
     @Override
     public void setAtUpdated(Timestamp atUpdated) {
-        metadata.atUpdated = atUpdated;
+        //metadata.atUpdated = atUpdated;
     }
 
 
-    public Metadata getMetadata() {
-        return metadata;
+    public MetadataEntityUtil.Metadata getMetadata() {
+        //return metadata;
+        return null;
     }
 
-    //*
-    public void setMetadata(Metadata metadata) {
+
+
+    /*
+    public void setMetadata(MetadataEntityUtil.Metadata metadata) {
         try {
-            if(metadata==null){
+            if (metadata == null) {
                 throw new NullPointerException();
             }
             Metadata metadata1 = metadata.clone();
             metadata1.atCreated = this.metadata.atCreated;
             metadata1.atUpdated = this.metadata.atUpdated;
             this.metadata = metadata1;
-        } catch (CloneNotSupportedException |NullPointerException e) {
+        } catch (CloneNotSupportedException | NullPointerException e) {
             //throw new AssertionError();
             e.printStackTrace();
         }
     }
 
     // */
+
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
 
     @Override
     public String toString() {

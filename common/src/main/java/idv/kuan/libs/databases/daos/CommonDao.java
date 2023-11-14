@@ -80,7 +80,7 @@ public abstract class CommonDao<V extends IAuditable> implements Dao<V> {
         Connection connection = DBFactoryConfiguration.getFactory().getConnection();
 
         QueryBuilder builder = new QueryBuilder();
-        populateBuilderWithEntityProperties(builder, entity);
+        populateColumnBuilderWithEntityProperties(builder, entity);
 
         String query = null;
 
@@ -150,7 +150,7 @@ public abstract class CommonDao<V extends IAuditable> implements Dao<V> {
      * @param builder
      * @param entity
      */
-    protected abstract void populateBuilderWithEntityProperties(QueryBuilder builder, V entity);
+    protected abstract void populateColumnBuilderWithEntityProperties(QueryBuilder builder, V entity);
 
     /**
      * @param entity
