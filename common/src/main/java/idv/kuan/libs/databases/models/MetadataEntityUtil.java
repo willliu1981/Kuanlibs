@@ -63,7 +63,10 @@ public class MetadataEntityUtil {
                         return metadataClass.cast(o);
                     }
 
-                } catch (IOException | ClassNotFoundException e) {
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                    System.out.println("dbg:" + e.getMessage());
+                } catch (IOException e) {
                     //throw new RuntimeException("Failed to deserialize metadata", e);
                     e.printStackTrace();
                 }

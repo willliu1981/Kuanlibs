@@ -1,4 +1,4 @@
-package idv.kuan.libs.observers;
+package idv.kuan.libs.interfaces.observers;
 
 public interface Observer<T> {
 

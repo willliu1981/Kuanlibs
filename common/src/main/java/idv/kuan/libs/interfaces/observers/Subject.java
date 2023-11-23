@@ -1,4 +1,4 @@
-package idv.kuan.libs.observers;
+package idv.kuan.libs.interfaces.observers;
 
 public interface Subject<T> {
     void registerObserver(Observer<T> observer);
