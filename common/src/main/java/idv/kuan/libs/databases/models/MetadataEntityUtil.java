@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MetadataEntityUtil {
 
@@ -14,7 +16,7 @@ public class MetadataEntityUtil {
 
     }
 
-    public static byte[] serializeMetadata(Metadata metadata) {
+    public static byte[] serializeMetadata(DefaultMetadata metadata) {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
              ObjectOutputStream oos = new ObjectOutputStream(bos)) {
             oos.writeObject(metadata);
@@ -51,14 +53,14 @@ public class MetadataEntityUtil {
             return this;
         }
 
-        public Metadata buildMetadata() {
+        public DefaultMetadata buildMetadata() {
 
             if (data != null) {
                 ByteArrayInputStream bis = new ByteArrayInputStream(data);
                 try (ObjectInputStream ois = new ObjectInputStream(bis)) {
 
                     Object o = ois.readObject();
-                    Class<Metadata> metadataClass = (Class<Metadata>) MetadataRegister.getMetadata(versoion);
+                    Class<DefaultMetadata> metadataClass = (Class<DefaultMetadata>) MetadataRegister.getMetadata(versoion);
                     if (metadataClass.isInstance(o)) {
                         return metadataClass.cast(o);
                     }
@@ -80,10 +82,17 @@ public class MetadataEntityUtil {
     }
 
 
-    public interface Metadata extends Serializable {
-        MetadataObject getMetadataObject(String name);
+    public static abstract class DefaultMetadata implements Serializable {
+        private Map<String, MetadataObject> metadataObjectMap = new HashMap<>();
 
-        void addMetadataObject(String name, MetadataObject metadataObject);
+
+        public MetadataObject getMetadataObject(String name) {
+            return metadataObjectMap.get(name);
+        }
+
+        public void addMetadataObject(String name, MetadataObject metadataObject) {
+            this.metadataObjectMap.put(name, metadataObject);
+        }
 
     }
 

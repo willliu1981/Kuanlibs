@@ -6,8 +6,8 @@ import java.sql.Timestamp;
 public abstract class MetadataEntity implements IAuditable {
 
     protected Integer id;
-    protected MetadataEntityUtil.Metadata metadata;
-    protected Integer version;
+    protected MetadataEntityUtil.DefaultMetadata metadata;
+    protected Integer version;//metadata version
 
 
     public MetadataEntity() {
@@ -93,7 +93,7 @@ public abstract class MetadataEntity implements IAuditable {
     }
 
 
-    public MetadataEntityUtil.Metadata getMetadata() {
+    public MetadataEntityUtil.DefaultMetadata getMetadata() {
         //return metadata;
         return null;
     }

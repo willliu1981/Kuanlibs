@@ -9,14 +9,14 @@ public class MetadataRegister {
 
     }
 
-    private static Map<Integer, Class<? extends MetadataEntityUtil.Metadata>> metadataMap = new HashMap<>();
+    private static Map<Integer, Class<? extends MetadataEntityUtil.DefaultMetadata>> metadataMap = new HashMap<>();
 
-    public static void addMetadata(Integer version, Class<? extends MetadataEntityUtil.Metadata> metadataClass) {
+    public static void addMetadata(Integer version, Class<? extends MetadataEntityUtil.DefaultMetadata> metadataClass) {
         MetadataRegister.metadataMap.put(version, metadataClass);
 
     }
 
-    public static Class<? extends MetadataEntityUtil.Metadata> getMetadata(Integer version) {
+    public static Class<? extends MetadataEntityUtil.DefaultMetadata> getMetadata(Integer version) {
         return MetadataRegister.metadataMap.get(version);
     }
 
