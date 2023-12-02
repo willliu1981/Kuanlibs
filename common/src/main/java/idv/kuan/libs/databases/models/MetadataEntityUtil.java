@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -82,36 +83,85 @@ public class MetadataEntityUtil {
     }
 
 
-    public static abstract class DefaultMetadata implements Serializable {
-        private Map<String, MetadataObject> metadataObjectMap = new HashMap<>();
+    public static abstract class DefaultMetadata implements Serializable, Cloneable {
+        String serialVersionUID = "1";
 
+        public static String ATUPDATED = "at_updated";
+        public static String ATCREATED = "at_created";
+        private Map<String, DataObject> dataObjectMap = new HashMap<>();
 
-        public MetadataObject getMetadataObject(String name) {
-            return metadataObjectMap.get(name);
+        public void setAtUpdated(Timestamp atUpdated) {
+            this.dataObjectMap.put(ATUPDATED, new DataObject(ATUPDATED).setData(atUpdated));
         }
 
-        public void addMetadataObject(String name, MetadataObject metadataObject) {
-            this.metadataObjectMap.put(name, metadataObject);
+        public void setAtCreated(Timestamp atCreated) {
+            this.dataObjectMap.put(ATCREATED, new DataObject(ATCREATED).setData(atCreated));
         }
 
-    }
 
-    public static class MetadataObject implements Serializable {
 
-        private String name;
 
-        public MetadataObject() {
+        private void writeObject(ObjectOutputStream oos) {
 
-        }
-
-        public MetadataObject(String name) {
-            this.name = name;
         }
 
         @Override
         public String toString() {
-            return "MetadataObject{" +
+            return null;
+        }
+
+
+        public DataObject getDataObject(String name) {
+            return dataObjectMap.get(name);
+        }
+
+        public void addDataObject(String name, DataObject dataObject) {
+
+            this.dataObjectMap.put(name, dataObject);
+        }
+
+
+        @Override
+        public DefaultMetadata clone() throws CloneNotSupportedException {
+
+
+            return (DefaultMetadata) super.clone();
+        }
+    }
+
+
+    public static class DataObject implements Serializable {
+
+        private String name;
+        private Object data;
+
+        public DataObject() {
+
+        }
+
+
+        public DataObject(String name) {
+            this.name = name;
+        }
+
+        public DataObject setData(Object data) {
+            this.data = data;
+            return this;
+        }
+
+        public Object getData() {
+            return this.data;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        @Override
+        public String toString() {
+            return "DataObject{" +
                     "name='" + name + '\'' +
+                    ", data=" + data +
                     '}';
         }
     }

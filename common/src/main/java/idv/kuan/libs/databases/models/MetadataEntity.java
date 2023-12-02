@@ -95,28 +95,13 @@ public abstract class MetadataEntity implements IAuditable {
 
     public MetadataEntityUtil.DefaultMetadata getMetadata() {
         //return metadata;
-        return null;
+        return this.metadata;
     }
 
 
-
-    /*
-    public void setMetadata(MetadataEntityUtil.Metadata metadata) {
-        try {
-            if (metadata == null) {
-                throw new NullPointerException();
-            }
-            Metadata metadata1 = metadata.clone();
-            metadata1.atCreated = this.metadata.atCreated;
-            metadata1.atUpdated = this.metadata.atUpdated;
-            this.metadata = metadata1;
-        } catch (CloneNotSupportedException | NullPointerException e) {
-            //throw new AssertionError();
-            e.printStackTrace();
-        }
+    public void setMetadata(MetadataEntityUtil.DefaultMetadata metadata) {
+        this.metadata = metadata;
     }
-
-    // */
 
 
     public Integer getVersion() {
