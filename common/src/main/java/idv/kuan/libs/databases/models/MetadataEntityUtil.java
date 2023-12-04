@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.io.StreamCorruptedException;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,10 +56,13 @@ public class MetadataEntityUtil {
         }
 
         public DefaultMetadata buildMetadata() {
+            if (versoion == -1) {
+                return null;
+            }
 
             if (data != null) {
-                ByteArrayInputStream bis = new ByteArrayInputStream(data);
-                try (ObjectInputStream ois = new ObjectInputStream(bis)) {
+
+                try (ByteArrayInputStream bis = new ByteArrayInputStream(data); ObjectInputStream ois = new ObjectInputStream(bis)) {
 
                     Object o = ois.readObject();
                     Class<DefaultMetadata> metadataClass = (Class<DefaultMetadata>) MetadataRegister.getMetadata(versoion);
@@ -68,6 +72,8 @@ public class MetadataEntityUtil {
 
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
+                    System.out.println("dbg:" + e.getMessage());
+                } catch (StreamCorruptedException e) {
                     System.out.println("dbg:" + e.getMessage());
                 } catch (IOException e) {
                     //throw new RuntimeException("Failed to deserialize metadata", e);
@@ -97,8 +103,6 @@ public class MetadataEntityUtil {
         public void setAtCreated(Timestamp atCreated) {
             this.dataObjectMap.put(ATCREATED, new DataObject(ATCREATED).setData(atCreated));
         }
-
-
 
 
         private void writeObject(ObjectOutputStream oos) {
