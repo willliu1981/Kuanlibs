@@ -29,6 +29,7 @@ public class MetadataEntityUtil {
         }
     }
 
+
     public static MetadataBuilder metadataBuilder() {
 
         return new MetadataBuilder();
@@ -61,9 +62,7 @@ public class MetadataEntityUtil {
             }
 
             if (data != null) {
-
                 try (ByteArrayInputStream bis = new ByteArrayInputStream(data); ObjectInputStream ois = new ObjectInputStream(bis)) {
-
                     Object o = ois.readObject();
                     Class<DefaultMetadata> metadataClass = (Class<DefaultMetadata>) MetadataRegister.getMetadata(versoion);
                     if (metadataClass.isInstance(o)) {
@@ -72,9 +71,9 @@ public class MetadataEntityUtil {
 
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
-                    System.out.println("dbg:" + e.getMessage());
+                    System.out.println("dbg:ClassNotFoundException:" + e.getMessage());
                 } catch (StreamCorruptedException e) {
-                    System.out.println("dbg:" + e.getMessage());
+                    System.out.println("dbg:StreamCorruptedException:" + e.getMessage());
                 } catch (IOException e) {
                     //throw new RuntimeException("Failed to deserialize metadata", e);
                     e.printStackTrace();
@@ -89,11 +88,11 @@ public class MetadataEntityUtil {
     }
 
 
-    public static abstract class DefaultMetadata implements Serializable, Cloneable {
-        String serialVersionUID = "1";
+    public static abstract class DefaultMetadata implements Serializable {
+         private static final long serialVersionUID = 1L;
 
-        public static String ATUPDATED = "at_updated";
-        public static String ATCREATED = "at_created";
+        public static final String ATUPDATED = "at_updated";
+        public static final String ATCREATED = "at_created";
         private Map<String, DataObject> dataObjectMap = new HashMap<>();
 
         public void setAtUpdated(Timestamp atUpdated) {
@@ -105,13 +104,11 @@ public class MetadataEntityUtil {
         }
 
 
-        private void writeObject(ObjectOutputStream oos) {
-
-        }
-
         @Override
         public String toString() {
-            return null;
+            return "DefaultMetadata{" +
+                    "dataObjectMap=" + dataObjectMap +
+                    '}';
         }
 
 
@@ -125,22 +122,16 @@ public class MetadataEntityUtil {
         }
 
 
-        @Override
-        public DefaultMetadata clone() throws CloneNotSupportedException {
-
-
-            return (DefaultMetadata) super.clone();
-        }
     }
 
 
     public static class DataObject implements Serializable {
+         private static final long serialVersionUID = 1L;
 
         private String name;
         private Object data;
 
         public DataObject() {
-
         }
 
 

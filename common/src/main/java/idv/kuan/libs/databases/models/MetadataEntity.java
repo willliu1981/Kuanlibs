@@ -11,53 +11,7 @@ public abstract class MetadataEntity implements IAuditable {
 
 
     public MetadataEntity() {
-        //this.metadata = new MetadataEntityUtil.Metadata();
     }
-
-
-    /*
-    public static class Metadata implements Cloneable, Serializable {
-        private static final long serialVersionUID = 1L;
-        private String data;
-        private Timestamp atCreated;
-        private Timestamp atUpdated;
-
-        private Metadata() {
-
-        }
-
-
-        @Override
-        public Metadata clone() throws CloneNotSupportedException {
-            try {
-                return (Metadata) super.clone();
-            } catch (AssertionError e) {
-                throw new AssertionError();
-            }
-
-        }
-
-
-        public String getData() {
-            return data;
-        }
-
-
-        @Override
-        public String toString() {
-            return "Metadata{" +
-                    "data='" + data + '\'' +
-                    ", atCreated=" + atCreated +
-                    ", atUpdated=" + atUpdated +
-                    '}';
-        }
-
-        public void setData(String data) {
-            this.data = data;
-        }
-    }
-
-         */
 
 
     @Override
@@ -70,31 +24,8 @@ public abstract class MetadataEntity implements IAuditable {
         this.id = id;
     }
 
-    @Override
-    public Timestamp getAtCreated() {
-        //return metadata.atCreated;
-        return null;
-    }
-
-    @Override
-    public void setAtCreated(Timestamp atCreated) {
-        //metadata.atCreated = atCreated;
-    }
-
-    @Override
-    public Timestamp getAtUpdated() {
-        //return metadata.atUpdated;
-        return null;
-    }
-
-    @Override
-    public void setAtUpdated(Timestamp atUpdated) {
-        //metadata.atUpdated = atUpdated;
-    }
-
 
     public MetadataEntityUtil.DefaultMetadata getMetadata() {
-        //return metadata;
         return this.metadata;
     }
 
@@ -110,6 +41,26 @@ public abstract class MetadataEntity implements IAuditable {
 
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    @Override
+    public Timestamp getAtCreated() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setAtCreated(Timestamp atCreated) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Timestamp getAtUpdated() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setAtUpdated(Timestamp atUpdated) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

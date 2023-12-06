@@ -37,6 +37,9 @@ public abstract class CommonDao<V extends IAuditable> implements Dao<V> {
                 list.add(entity);
             }
 
+            preparedStatement.close();
+            resultSet.close();
+
             return (U) list;
 
         } else {
@@ -47,6 +50,9 @@ public abstract class CommonDao<V extends IAuditable> implements Dao<V> {
             if (resultSet.next()) {
                 mapResultSetToEntity(entity, resultSet);
             }
+
+            preparedStatement.close();
+            resultSet.close();
             return (U) entity;
         }
     }
@@ -85,8 +91,10 @@ public abstract class CommonDao<V extends IAuditable> implements Dao<V> {
         String query = null;
 
         if (entity.getId() == null) {
+            //create
             query = builder.buildInsertQuery(getTableName());
         } else {
+            //update
             String condition = "id = " + entity.getId();
             query = builder.buildUpdateQuery(getTableName(), condition);
         }
@@ -96,6 +104,7 @@ public abstract class CommonDao<V extends IAuditable> implements Dao<V> {
         builder.prepareStatement(statment);
         statment.executeUpdate();
 
+        statment.close();
 
     }
 
@@ -140,6 +149,7 @@ public abstract class CommonDao<V extends IAuditable> implements Dao<V> {
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setInt(1, entity.getId());
         boolean execute = preparedStatement.execute();
+        preparedStatement.close();
         System.out.println("dbg CD:delete resulte is " + execute);
     }
 
