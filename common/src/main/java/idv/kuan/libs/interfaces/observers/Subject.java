@@ -8,26 +8,29 @@ public interface Subject<T> {
         return new ArrayList<>();
     }
 
-    List<Observer<T>> getActionObservers();
+    List<Observer<T>> getObservers();
 
 
     default void registerObserver(Observer<T> observer) {
-        this.getActionObservers().add(observer);
+        this.getObservers().add(observer);
     }
 
-    default void setDataAndNotifyObservers(T data) {
-        notifyObservers();
+    default void setData(T data) {
+        notifyObservers(data);
     }
 
-    T getData();
+
+
 
     default void removeObserver(Observer<T> observer) {
-        this.getActionObservers().remove(observer);
+        this.getObservers().remove(observer);
     }
 
-    default void notifyObservers() {
-        this.getActionObservers().forEach(o -> {
-            o.update(this.getData());
+    default void notifyObservers(T data) {
+        this.getObservers().forEach(o -> {
+            o.update(data);
         });
     }
+
+
 }
