@@ -3,6 +3,7 @@ package idv.kuan.libs.interfaces.observers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public interface Subject<T> {
     default List<Observer<T>> createObservers() {
@@ -28,8 +29,18 @@ public interface Subject<T> {
     }
 
     default void notifyObservers(T data) {
-        this.getObservers().forEach(o -> {
+        List<Observer<T>> collect = this.getObservers().stream().collect(Collectors.toList());
+
+        collect.forEach(o -> {
+            o.onBeforeAllUpdate(data);
+        });
+
+        collect.forEach(o -> {
             o.update(data);
+        });
+
+        collect.forEach(o -> {
+            o.onAfterAllUpdate(data);
         });
     }
 

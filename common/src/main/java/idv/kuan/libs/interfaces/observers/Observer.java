@@ -8,6 +8,14 @@ public interface Observer<T> {
         this.getSubject().setData(data);
     }
 
+    default void onBeforeAllUpdate(T data) {
+
+    }
+
     void update(T data);
+
+    default void onAfterAllUpdate(T data) {
+
+    }
 
 }
