@@ -2,6 +2,7 @@ package idv.kuan.libs.interfaces.observers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public interface Subject<T> {
     default List<Observer<T>> createObservers() {
@@ -9,6 +10,8 @@ public interface Subject<T> {
     }
 
     List<Observer<T>> getObservers();
+
+    Map<String, Object> getOtherData();
 
 
     default void registerObserver(Observer<T> observer) {
@@ -18,8 +21,6 @@ public interface Subject<T> {
     default void setData(T data) {
         notifyObservers(data);
     }
-
-
 
 
     default void removeObserver(Observer<T> observer) {
